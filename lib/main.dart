@@ -54,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             const Text(
               
-              'Expense Form',
+              'Expenses Form',
             ),
             TextField(
             controller: _con,
