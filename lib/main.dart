@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const MyApp());
@@ -35,7 +38,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 
- final TextEditingController  _con =  TextEditingController() ;
+ final TextEditingController  _expDescription =  TextEditingController() ;
+  final TextEditingController  _expAmount =  TextEditingController() ;
 
 
   @override
@@ -49,40 +53,105 @@ class _MyHomePageState extends State<MyHomePage> {
        
       ),
       body: Center(     
-        child: Column(        
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
+        child: Card(
+          elevation: 20,
+          child: Column(        
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Text(
+                
+                'Enter Expense Detail',
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+              SizedBox(height: 15,),
+              Padding(
+                padding: const EdgeInsets.only(left: 15,right: 15),
+                child: TextField(                  
+                decoration: InputDecoration(
+                  hintText: "Enter Expense Description",
+                  border: OutlineInputBorder()
+                ),
+                controller: _expDescription,
+                
+                ),
+              ),
+              SizedBox(height: 10,),
+              Padding(
+                padding: const EdgeInsets.only(left: 15,right: 15),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: "Enter Expense Amount Here",
+                    border: OutlineInputBorder()
+                  ),
+                controller: _expAmount,
+                
+                ),
+              ),
+              SizedBox(height: 10,),
+              // ElevatedButton(onPressed: (){
+              //   showDialog(context: context,
+              //               builder: (BuildContext context) {
+          
+              //                 return AlertDialog(
+                              
+              //                   title: const Text("Show Alert Dialog"),
+              //                   content: const Text("Do you really want to Show Message"),
+              //                   actions: [
+              //                     ElevatedButton(onPressed: (){print(_expDescription.text);}, child: const Text("Yes"),),
+              //                     ElevatedButton(onPressed: (){Navigator.of(context).pop();}, child: const Text("No"),),
+              //                   ],
+              //                 );
+          
+          
+              //   },
+              //   barrierDismissible: false);
+          
+          
+                
+              // }, child: const Text('Upload'),),
+          
+              ElevatedButton(onPressed: () async {
+          
+          
+          
+               var  res = await http.post(Uri.parse("http://172.16.14.118:8081/create_expense"),
+                   headers: {"Content-Type": "application/json"},
+               body:jsonEncode({
+                      "description" : _expDescription.text,
+                      "amount" : _expAmount.text
+                  }),
+                  );
+                  
+
+                var b =  jsonDecode(res.body);
+
+                 if  (b['response'] == "success" ){
+                  showDialog(context: context, builder: (BuildContext context){
+                    return AlertDialog(
+                      title:   Text("Alert"),
+                      content: Text("Expense has been Save"),
+                      actions: [
+                        ElevatedButton(onPressed: (){
+                          Navigator.pop(context);
+                        }, child: Text("Ok"))
+                      ],
+                    );
+                  });
+
+                 }
+                  
+          
+                  
+          
+          
+          
+              }, child: Text("Add Expense"))
               
-              'Expenses Form Label',
-            ),
-            TextField(
-            controller: _con,
-
-            ),
-            ElevatedButton(onPressed: (){
-              showDialog(context: context,
-                          builder: (BuildContext context) {
-
-                            return AlertDialog(
-                            
-                              title: const Text("Show Alert Dialog"),
-                              content: const Text("Do you really want to Show Message"),
-                              actions: [
-                                ElevatedButton(onPressed: (){print(_con.text);}, child: const Text("Yes"),),
-                                ElevatedButton(onPressed: (){Navigator.of(context).pop();}, child: const Text("No"),),
-                              ],
-                            );
-
-
-              },
-              barrierDismissible: false);
-
-
-              
-            }, child: const Text('Upload'),),
-            
-          ],
+            ],
+          ),
         ),
       )
     );
